@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-    private static final String ACCESS_TOKEN = "4d44a2a4f91889b73c6e5a441577b600fa86e60af01774a166748ab878b83e5bf54e13cd7c218cf57a22e";
+    private static final String ACCESS_TOKEN = "10d44a2a4f91889b73c6e5a441577b600fa86e60af01774a166748ab878b83e5bf54e13cd7c218cf57a22e";
 
     private static final String CLIENT_SECRET = "h3N1Vad7fCrH1Ko6AHFu";
     private static final String REDIRECT_URI = "https://oauth.vk.com/blank.html";
