@@ -66,7 +66,8 @@ public class ApiPostVK {
 
     }
 
-    public void getPostGroup(int nmGroup) {
+    public GetResponse getPostGroup(int nmGroup) {
+
         try {
             //Посты в группе
 
@@ -77,13 +78,15 @@ public class ApiPostVK {
                     //.offset(0)
                     .execute();
 
-            System.out.println(getPostGrp.toString());
+            return getPostGrp;
 
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (ClientException e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 
     public void getBoardGroup() {

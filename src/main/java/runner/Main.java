@@ -54,6 +54,7 @@ public class Main {
         try {
 
             MainLaunch mainLaunch = new MainLaunch();
+            mainLaunch.postToFileTxt();
 
 
         } catch (Exception e) {

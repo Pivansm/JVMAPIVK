@@ -11,7 +11,7 @@ public class ResultSetToTxt {
         this.pathFile = strPathFile;
     }
 
-    private void toFileTxtExport(TableRecordsAll tbl) {
+    public void toFileTxtExport(TableRecordsAll tbl) {
         try
         {
             FileWriter fileWriter = new FileWriter( new File(this.pathFile));
