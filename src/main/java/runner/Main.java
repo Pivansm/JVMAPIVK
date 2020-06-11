@@ -1,13 +1,13 @@
 package runner;
 
 import com.vk.api.sdk.exceptions.ApiException;
+import setting.DBConnector;
+import sqlitejdbc.SQLiteDAO;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -45,16 +45,41 @@ public class Main {
         }
     }
 
+    private static SQLiteDAO sqLiteDAO;
+    private static DBConnector connectorSqlite;
+    private static final String CONN_IRL = "jdbc:sqlite:dbsqlrb.sqlite";
+    private static final String CONN_DRIVER = "org.sqlite.JDBC";
+
 
     public static void main(String[] args) throws ApiException, InterruptedException {
 
         System.out.println("========Start========");
+        File currSqlite = new File("dbsqlrb.sqlite");
+        if(!currSqlite.exists()) {
+            System.out.println("Нет БД dbsqlrb.sqlite");
+            try
+            {
+                connectorSqlite = new DBConnector(CONN_DRIVER, CONN_IRL, null, null);
+                sqLiteDAO = new SQLiteDAO(connectorSqlite.getConnection());
+                sqLiteDAO.createTable();
+                sqLiteDAO.closeConnection();
+
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            System.out.println("БД dbsqlrb.sqlite OK!");
+        }
 
 
         try {
 
             MainLaunch mainLaunch = new MainLaunch();
-            mainLaunch.postToFileTxt();
+            //mainLaunch.postToFileTxt();
+            mainLaunch.processingFoundation();
 
 
         } catch (Exception e) {
