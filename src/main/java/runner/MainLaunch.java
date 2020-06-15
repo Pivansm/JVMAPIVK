@@ -32,10 +32,15 @@ public class MainLaunch {
     }
 
     public void processingFoundation() {
-        //Строка вставки
-        String insertQuery = sqLiteDAO.fieldsToSqlParameter();
-        //Заполнение тбл
-        postToTableSqlite(insertQuery);
+        try {
+            //Строка вставки
+            String insertQuery = sqLiteDAO.fieldsToSqlParameter();
+            //Заполнение тбл
+            postToTableSqlite(insertQuery);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -94,45 +99,80 @@ public class MainLaunch {
         }
     }
 
-    private void postToTableSqlite(String insertQuery) {
+    private void postToTableSqlite(String insertQuery) throws InterruptedException {
 
-        ResultSetToTxt toTxt = new ResultSetToTxt("export.csv");
         ApiPostVK apiPostVK = new ApiPostVK(setting);
         String[] strGroups = setting.getGroup_id().split("[, ]+");
         for(String group : strGroups) {
             System.out.println("Сообщество: " + group);
-            GetResponse getPostGrp = apiPostVK.getPostGroup(Integer.parseInt(group));
+            //GetResponse getPostGrp = apiPostVK.getPostGroup(Integer.parseInt(group));
+            GetResponse getPostGrp = apiPostVK.getPostGroupOffs10(Integer.parseInt(group), 0);
             int countZ = getPostGrp.getCount();
             System.out.println("Количество постов:" + countZ);
-            //String nmGroup = getPostGrp.
-            //System.out.println(getPostGrp.toString());
+
             TableRecordsAll tbl = new TableRecordsAll();
-            for(var gr : getPostGrp.getItems()) {
-                Records rs = new Records();
 
-                rs.addCell(gr.getId());
-                rs.addCell(gr.getFromId());
+                for (var gr : getPostGrp.getItems()) {
+                    Records rs = new Records();
 
-                System.out.println("Id:" + gr.getId() + ": " +gr.getText());
-                var at = gr.getAttachments();
-                System.out.println("Ata:" + at.toString());
-                String strCaption = "";
-                for(int i = 0; i < at.size(); i++) {
-                    var ati = at.get(i);
-                    System.out.println("" + ati.getLink());
-                    var lk = ati.getLink();
-                    if(lk != null) {
-                        System.out.println(lk.getCaption());
-                        strCaption += lk.getCaption() + ",";
+                    rs.addCell(gr.getId());
+                    rs.addCell(gr.getFromId());
+
+                    System.out.println("Id:" + gr.getId() + ": " + gr.getText());
+                    var at = gr.getAttachments();
+                    System.out.println("Ata:" + at.toString());
+                    String strCaption = "";
+                    for (int i = 0; i < at.size(); i++) {
+                        var ati = at.get(i);
+                        System.out.println("" + ati.getLink());
+                        var lk = ati.getLink();
+                        if (lk != null) {
+                            System.out.println(lk.getCaption());
+                            strCaption += lk.getCaption() + ",";
+                        }
+                    }
+                    rs.addCell(strCaption);
+                    rs.addCell(gr.getText());
+                    tbl.addRecords(rs);
+                }
+                for (int j = 11; j < countZ; j++) {
+                    if (j % 10 == 0) {
+                        GetResponse getPostGrp2 = apiPostVK.getPostGroupOffs10(Integer.parseInt(group), j);
+                        for (var gr : getPostGrp2.getItems()) {
+                            System.out.println("Id:" + gr.getId() + ": " + gr.getText());
+                            Records rs = new Records();
+
+                            rs.addCell(gr.getId());
+                            rs.addCell(gr.getFromId());
+
+                            var at = gr.getAttachments();
+                            //System.out.println("Ata:" + at.toString());
+                            String strCaption = "";
+                            if(at != null) {
+                                for (int i = 0; i < at.size(); i++) {
+                                    var ati = at.get(i);
+                                    System.out.println("" + ati.getLink());
+                                    var lk = ati.getLink();
+                                    if (lk != null) {
+                                        System.out.println(lk.getCaption());
+                                        strCaption += lk.getCaption() + ",";
+                                    }
+                                }
+                            }
+                            rs.addCell(strCaption);
+                            rs.addCell(gr.getText());
+                            tbl.addRecords(rs);
+
+                        }
+                        Thread.sleep(500);
                     }
                 }
-                rs.addCell(strCaption);
-                rs.addCell(gr.getText());
-                tbl.addRecords(rs);
-            }
-            //
-            System.out.println("Запись данных в БД!");
-            sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
+
+                //
+                System.out.println("Запись данных в БД!");
+                sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
+
+
         }
     }
 }

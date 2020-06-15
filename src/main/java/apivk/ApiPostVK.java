@@ -89,6 +89,28 @@ public class ApiPostVK {
         return null;
     }
 
+    public GetResponse getPostGroupOffs10(int nmGroup, int offset) {
+
+        try {
+
+            GetResponse getPostGrp = vk.wall().get(actor)
+                    .filter(WallGetFilter.ALL)
+                    .ownerId(-1*nmGroup)
+                    .count(10)
+                    .offset(offset)
+                    .execute();
+
+            return getPostGrp;
+
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public void getBoardGroup() {
         try {
             GetTopicsResponse getBoardGrp = vk.board().getTopics(actor, 151897652)
