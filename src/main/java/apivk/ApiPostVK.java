@@ -8,6 +8,7 @@ import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.board.responses.GetTopicsResponse;
 import com.vk.api.sdk.objects.groups.GroupFull;
+import com.vk.api.sdk.objects.utils.DomainResolved;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import com.vk.api.sdk.queries.board.BoardGetTopicsOrder;
 import com.vk.api.sdk.queries.board.BoardGetTopicsPreview;
@@ -125,6 +126,19 @@ public class ApiPostVK {
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (ClientException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getIDGroup(String nmGroup) {
+
+        try {
+            DomainResolved getIdGrp = vk.utils().resolveScreenName(actor, nmGroup)
+                    .execute();
+
+            System.out.println(getIdGrp.toString());
+
+        } catch (ApiException | ClientException e) {
             e.printStackTrace();
         }
     }

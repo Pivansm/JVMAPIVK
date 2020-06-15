@@ -10,8 +10,10 @@ import setting.Setting;
 import setting.SettingJson;
 import sqlitejdbc.SQLiteDAO;
 
+import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashSet;
 
 public class MainLaunch {
     private Setting setting;
@@ -37,6 +39,8 @@ public class MainLaunch {
             String insertQuery = sqLiteDAO.fieldsToSqlParameter();
             //Заполнение тбл
             postToTableSqlite(insertQuery);
+            //Получить Id группы
+            //getToIdGroupReport();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -120,15 +124,18 @@ public class MainLaunch {
 
                     System.out.println("Id:" + gr.getId() + ": " + gr.getText());
                     var at = gr.getAttachments();
-                    System.out.println("Ata:" + at.toString());
                     String strCaption = "";
-                    for (int i = 0; i < at.size(); i++) {
-                        var ati = at.get(i);
-                        System.out.println("" + ati.getLink());
-                        var lk = ati.getLink();
-                        if (lk != null) {
-                            System.out.println(lk.getCaption());
-                            strCaption += lk.getCaption() + ",";
+                    if(at != null) {
+                        System.out.println("Ata:" + at.toString());
+
+                        for (int i = 0; i < at.size(); i++) {
+                            var ati = at.get(i);
+                            System.out.println("" + ati.getLink());
+                            var lk = ati.getLink();
+                            if (lk != null) {
+                                System.out.println(lk.getCaption());
+                                strCaption += lk.getCaption() + ",";
+                            }
                         }
                     }
                     rs.addCell(strCaption);
@@ -171,8 +178,36 @@ public class MainLaunch {
                 //
                 System.out.println("Запись данных в БД!");
                 sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
-
-
         }
+    }
+
+    public void getToIdGroupReport() {
+        ApiPostVK apiPostVK = new ApiPostVK(setting);
+        apiPostVK.getIDGroup("sber.sluh");
+    }
+
+    public HashSet<String> importFileGroup(String inFile) {
+        HashSet<String> hashSet = new HashSet<>();
+        File file = new File(inFile);
+
+        try
+        {
+            BufferedReader b = new BufferedReader(new FileReader(file));
+            String readLine = "";
+
+            while ((readLine = b.readLine()) != null) {
+                hashSet.add(readLine);
+            }
+
+            b.close();
+
+            return hashSet;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
