@@ -11,3 +11,16 @@ org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_PRIMARYKEY]  A PRIMARY KEY constr
 	at runner.MainLaunch.processingFoundation(MainLaunch.java:38)
 	at runner.Main.main(Main.java:82)
 
+июн. 15, 2020 6:11:03 PM sqlitejdbc.SQLiteDAO insertBatch
+SEVERE: [SQLITE_CONSTRAINT_PRIMARYKEY]  A PRIMARY KEY constraint failed (UNIQUE constraint failed: POSTVK.IDPOST)
+org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_PRIMARYKEY]  A PRIMARY KEY constraint failed (UNIQUE constraint failed: POSTVK.IDPOST)
+	at org.sqlite.core.DB.newSQLException(DB.java:1010)
+	at org.sqlite.core.DB.newSQLException(DB.java:1022)
+	at org.sqlite.core.DB.throwex(DB.java:987)
+	at org.sqlite.core.DB.executeBatch(DB.java:812)
+	at org.sqlite.core.CorePreparedStatement.executeBatch(CorePreparedStatement.java:72)
+	at sqlitejdbc.SQLiteDAO.insertBatch(SQLiteDAO.java:109)
+	at runner.MainLaunch.postToTableSqlite(MainLaunch.java:180)
+	at runner.MainLaunch.processingFoundation(MainLaunch.java:41)
+	at runner.Main.main(Main.java:82)
+

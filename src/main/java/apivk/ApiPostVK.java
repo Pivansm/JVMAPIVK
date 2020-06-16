@@ -3,6 +3,7 @@ package apivk;
 import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
+import com.vk.api.sdk.exceptions.ApiCaptchaException;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
@@ -68,24 +69,26 @@ public class ApiPostVK {
     }
 
     public GetResponse getPostGroup(int nmGroup) {
-
+        String captchaSid = null;
+        String captchaImg = null;
         try {
             //Посты в группе
-
             GetResponse getPostGrp = vk.wall().get(actor)
                     .filter(WallGetFilter.ALL)
-                    .ownerId(-1*nmGroup)
-                    //.count(5)
-                    //.offset(0)
+                    .ownerId(-1 * nmGroup)
                     .execute();
 
             return getPostGrp;
 
+        } catch (ApiCaptchaException e) {
+            captchaSid = e.getSid();
+            e.fillInStackTrace();
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (ClientException e) {
             e.printStackTrace();
         }
+
 
         return null;
     }

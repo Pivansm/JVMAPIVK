@@ -1,6 +1,7 @@
 package runner;
 
 import apivk.ApiPostVK;
+import com.vk.api.sdk.exceptions.ApiCaptchaException;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import exporttxt.Records;
 import exporttxt.ResultSetToTxt;
@@ -14,6 +15,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 
 public class MainLaunch {
     private Setting setting;
@@ -42,7 +44,7 @@ public class MainLaunch {
             //Получить Id группы
             //getToIdGroupReport();
 
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -103,18 +105,18 @@ public class MainLaunch {
         }
     }
 
-    private void postToTableSqlite(String insertQuery) throws InterruptedException {
+    private void postToTableSqlite(String insertQuery) {
 
         ApiPostVK apiPostVK = new ApiPostVK(setting);
         String[] strGroups = setting.getGroup_id().split("[, ]+");
         for(String group : strGroups) {
             System.out.println("Сообщество: " + group);
-            //GetResponse getPostGrp = apiPostVK.getPostGroup(Integer.parseInt(group));
-            GetResponse getPostGrp = apiPostVK.getPostGroupOffs10(Integer.parseInt(group), 0);
-            int countZ = getPostGrp.getCount();
-            System.out.println("Количество постов:" + countZ);
+            GetResponse getPostGrp = apiPostVK.getPostGroup(Integer.parseInt(group));
+                //GetResponse getPostGrp = apiPostVK.getPostGroupOffs10(Integer.parseInt(group), 0);
+                int countZ = getPostGrp.getCount();
+                System.out.println("Количество постов:" + countZ);
 
-            TableRecordsAll tbl = new TableRecordsAll();
+                TableRecordsAll tbl = new TableRecordsAll();
 
                 for (var gr : getPostGrp.getItems()) {
                     Records rs = new Records();
@@ -125,7 +127,7 @@ public class MainLaunch {
                     System.out.println("Id:" + gr.getId() + ": " + gr.getText());
                     var at = gr.getAttachments();
                     String strCaption = "";
-                    if(at != null) {
+                    if (at != null) {
                         System.out.println("Ata:" + at.toString());
 
                         for (int i = 0; i < at.size(); i++) {
@@ -155,7 +157,7 @@ public class MainLaunch {
                             var at = gr.getAttachments();
                             //System.out.println("Ata:" + at.toString());
                             String strCaption = "";
-                            if(at != null) {
+                            if (at != null) {
                                 for (int i = 0; i < at.size(); i++) {
                                     var ati = at.get(i);
                                     System.out.println("" + ati.getLink());
@@ -171,19 +173,32 @@ public class MainLaunch {
                             tbl.addRecords(rs);
 
                         }
-                        Thread.sleep(500);
+
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            ex.fillInStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 }
 
                 //
                 System.out.println("Запись данных в БД!");
                 sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
-        }
+
+         }
     }
 
     public void getToIdGroupReport() {
+
         ApiPostVK apiPostVK = new ApiPostVK(setting);
-        apiPostVK.getIDGroup("sber.sluh");
+        HashSet<String> hashSet = importFileGroup("bdnmgroup.txt");
+
+        for(String gr : hashSet) {
+            apiPostVK.getIDGroup(gr);
+
+        }
     }
 
     public HashSet<String> importFileGroup(String inFile) {

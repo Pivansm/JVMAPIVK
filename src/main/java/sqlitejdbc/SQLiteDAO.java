@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import static runner.Main.LOGGER;
 
 public class SQLiteDAO extends AbstractDAO {
-    private static final String SQL_CRT_TBL1 = "CREATE TABLE IF NOT EXISTS POSTVK(IDPOST INTEGER PRIMARY KEY, " +
+    private static final String SQL_CRT_TBL1 = "CREATE TABLE IF NOT EXISTS POSTVK(IDPOST INTEGER, " +
             "FROMID INTEGER, CAPTVK VARCHAR(250), POSTTXT TEXT)";
     private static final String SQL_META_TBL = "SELECT * FROM POSTVK";
     private List<SetFields> fieldsList;
