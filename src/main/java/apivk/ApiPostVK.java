@@ -9,7 +9,10 @@ import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.board.responses.GetTopicsResponse;
 import com.vk.api.sdk.objects.groups.GroupFull;
+import com.vk.api.sdk.objects.users.UserXtrCounters;
 import com.vk.api.sdk.objects.utils.DomainResolved;
+import com.vk.api.sdk.objects.wall.WallPostFull;
+import com.vk.api.sdk.objects.wall.responses.GetCommentsResponse;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import com.vk.api.sdk.queries.board.BoardGetTopicsOrder;
 import com.vk.api.sdk.queries.board.BoardGetTopicsPreview;
@@ -36,16 +39,18 @@ public class ApiPostVK {
         return vk;
     }
 
-    public String getClient() {
+    public List<UserXtrCounters> getClient(String userId) {
         //Данные о клиенте
         try {
-            String getResponse = vk.users().get(actor)
-                    .userIds("492829072")
-                    .executeAsString();
-            System.out.println(getResponse);
+
+            List<UserXtrCounters> getResponse = vk.users().get(actor)
+                    .userIds(userId)
+                    .execute();
 
             return getResponse;
         } catch (ClientException e) {
+            e.printStackTrace();
+        } catch (ApiException e) {
             e.printStackTrace();
         }
         return null;
@@ -54,8 +59,7 @@ public class ApiPostVK {
 
     public void getGroups() {
         try {
-            //Группа Сообщество
-            //String getGroups = vk.groups().getById(actor)
+
             List<GroupFull> getGroups = vk.groups().getById(actor)
                     .groupId("151897652")
                     .execute();
@@ -76,6 +80,7 @@ public class ApiPostVK {
             GetResponse getPostGrp = vk.wall().get(actor)
                     .filter(WallGetFilter.ALL)
                     .ownerId(-1 * nmGroup)
+                    .count(1)
                     .execute();
 
             return getPostGrp;
@@ -100,8 +105,26 @@ public class ApiPostVK {
             GetResponse getPostGrp = vk.wall().get(actor)
                     .filter(WallGetFilter.ALL)
                     .ownerId(-1*nmGroup)
-                    .count(10)
+                    .count(1)
                     .offset(offset)
+                    .execute();
+
+            return getPostGrp;
+
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public List<WallPostFull> getPostGroupById(String nmGroup) {
+
+        try {
+
+            List<WallPostFull> getPostGrp =  vk.wall().getById(actor, nmGroup)
                     .execute();
 
             return getPostGrp;
@@ -135,14 +158,33 @@ public class ApiPostVK {
 
     public void getIDGroup(String nmGroup) {
 
+        DomainResolved getIdGrp = null;
         try {
-            DomainResolved getIdGrp = vk.utils().resolveScreenName(actor, nmGroup)
+            getIdGrp = vk.utils().resolveScreenName(actor, nmGroup)
                     .execute();
-
             System.out.println(getIdGrp.toString());
-
-        } catch (ApiException | ClientException e) {
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public GetCommentsResponse getGroupComments(int nmGroup, int postId) {
+
+        try {
+            GetCommentsResponse commentsResponse = vk.wall().getComments(actor, postId)
+                    .ownerId(-1 * nmGroup)
+                    .execute();
+            System.out.println(commentsResponse.toString());
+            return commentsResponse;
+
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

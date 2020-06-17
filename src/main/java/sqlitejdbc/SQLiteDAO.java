@@ -12,8 +12,10 @@ import static runner.Main.LOGGER;
 
 public class SQLiteDAO extends AbstractDAO {
     private static final String SQL_CRT_TBL1 = "CREATE TABLE IF NOT EXISTS POSTVK(IDPOST INTEGER, " +
-            "FROMID INTEGER, CAPTVK VARCHAR(250), POSTTXT TEXT)";
+            "FROMID INTEGER, CAPTVK VARCHAR(250), POSTTXT TEXT, FIO VARCHAR(200), BIRTCHDT DATE)";
     private static final String SQL_META_TBL = "SELECT * FROM POSTVK";
+    private static final String SQL_CRT_TBL2 = "CREATE TABLE IF NOT EXISTS COMMENTVK(IDCOMM INTEGER, " +
+            "FROMID INTEGER, COMMTXT TEXT, FIO VARCHAR(200), BIRTCHDT DATE)";
     private List<SetFields> fieldsList;
 
     public SQLiteDAO(Connection connection) {
@@ -37,19 +39,23 @@ public class SQLiteDAO extends AbstractDAO {
     public void createTable(){
         //Первая таблица
         runnerToQuery(SQL_CRT_TBL1);
+        //Вторая таблица
+        runnerToQuery(SQL_CRT_TBL2);
     }
 
-    public String fieldsToSqlParameter() {
+
+
+    public String fieldsToSqlParameter(String nmTable) {
 
         PreparedStatement st = null;
         try
         {
-            st = connection.prepareStatement(SQL_META_TBL);
+            st = connection.prepareStatement("SELECT * FROM " + nmTable);
             ResultSet rs = st.executeQuery();
             ResultSetMetaData metaData = st.getMetaData();
             List<String> stringList = new ArrayList<>();
             List<String> stringParam = new ArrayList<>();
-            String sqlInz = "INSERT INTO POSTVK ";
+            String sqlInz = "INSERT INTO " + nmTable + " ";
             for(int i = 1, collCount = metaData.getColumnCount(); i <= collCount; i++) {
                 stringList.add(metaData.getColumnName(i));
                 stringParam.add("?");
