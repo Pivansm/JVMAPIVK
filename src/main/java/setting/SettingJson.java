@@ -31,7 +31,8 @@ public class SettingJson extends AbstractJson<Setting>{
         if(!file.exists()) {
             setting.setClient_id(7498451);
             setting.setGroup_id("151897652");
-            setting.setAccess_token("624e44cb4413ef63fabc370bf8551de62615a112861007c383b81269bef10226bf01b9afbd5574651af2e");
+            setting.setAccess_token("");
+            setting.setSecure_key("");
 
             String json = gson.toJson(setting);
             try(FileWriter writer = new FileWriter(file, true))

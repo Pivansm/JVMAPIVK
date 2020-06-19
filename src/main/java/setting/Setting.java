@@ -4,6 +4,7 @@ public class Setting extends Entity {
     private String access_token;
     private String group_id;
     private int client_id;
+    private String secure_key;
 
 
     public Setting() {
@@ -32,5 +33,13 @@ public class Setting extends Entity {
 
     public String getAccess_token() {
         return access_token;
+    }
+
+    public String getSecure_key() {
+        return secure_key;
+    }
+
+    public void setSecure_key(String secure_key) {
+        this.secure_key = secure_key;
     }
 }

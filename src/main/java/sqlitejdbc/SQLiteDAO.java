@@ -12,15 +12,16 @@ import static runner.Main.LOGGER;
 
 public class SQLiteDAO extends AbstractDAO {
     private static final String SQL_CRT_TBL1 = "CREATE TABLE IF NOT EXISTS POSTVK(IDPOST INTEGER, " +
-            "FROMID INTEGER, CAPTVK VARCHAR(250), POSTTXT TEXT, FIO VARCHAR(200), BIRTCHDT DATE)";
+            "IDGROUP INTEGER, CAPTVK VARCHAR(250), POSTTXT TEXT, IDCLIENT INTEGER, FIO VARCHAR(200), " +
+            "BIRTCHDT VARCHAR(20))";
     private static final String SQL_META_TBL = "SELECT * FROM POSTVK";
     private static final String SQL_CRT_TBL2 = "CREATE TABLE IF NOT EXISTS COMMENTVK(IDCOMM INTEGER, " +
-            "FROMID INTEGER, COMMTXT TEXT, FIO VARCHAR(200), BIRTCHDT DATE)";
-    private List<SetFields> fieldsList;
+            "IDGROUP INTEGER, COMMTXT TEXT, FIO VARCHAR(200), BIRTCHDT VARCHAR(20))";
+    private static final String SQL_INSERT_TBL2 = "INSERT INTO COMMENTVK(IDCOMM, " +
+            "IDGROUP, COMMTXT, FIO, BIRTCHDT) VALUES (?, ?, ?, ?, ?)";
 
     public SQLiteDAO(Connection connection) {
         super(connection);
-        fieldsList = new ArrayList<>();
     }
 
     @Override
@@ -45,8 +46,8 @@ public class SQLiteDAO extends AbstractDAO {
 
 
 
-    public String fieldsToSqlParameter(String nmTable) {
-
+    public SetQueryFields fieldsToSqlParameter(String nmTable) {
+        SetQueryFields queryFields = new SetQueryFields();
         PreparedStatement st = null;
         try
         {
@@ -59,12 +60,13 @@ public class SQLiteDAO extends AbstractDAO {
             for(int i = 1, collCount = metaData.getColumnCount(); i <= collCount; i++) {
                 stringList.add(metaData.getColumnName(i));
                 stringParam.add("?");
-                fieldsList.add(new SetFields(metaData.getColumnName(i), metaData.getColumnTypeName(i)));
+                queryFields.getFieldsList().add(new SetFields(metaData.getColumnName(i), metaData.getColumnTypeName(i)));
             }
             sqlInz += "(" + String.join(",", stringList) + ") VALUES (" + String.join(",", stringParam) + ")";
             st.close();
+            queryFields.setQuery(sqlInz);
 
-            return sqlInz;
+            return queryFields;
         } catch (SQLException e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -72,15 +74,15 @@ public class SQLiteDAO extends AbstractDAO {
         }
      }
 
-     public void insertBatch(TableRecordsAll tbl, String insertQuery, int iBatch) {
+     public void insertBatch(TableRecordsAll tbl, SetQueryFields insertQuery, int iBatch) {
             if(tbl != null) {
                 PreparedStatement st = null;
                 try {
-                    st = connection.prepareStatement(insertQuery);
+                    st = connection.prepareStatement(insertQuery.getQuery());
                     int countRow = 0;
                     for (Records row : tbl.getListRec()) {
-                        for (int i = 0, collCount = fieldsList.size(); i < collCount; i++) {
-                            SetFields field = fieldsList.get(i);
+                        for (int i = 0, collCount = insertQuery.getFieldsList().size(); i < collCount; i++) {
+                            SetFields field = insertQuery.getFieldsList().get(i);
                             Object coll = null;
                             if (row.cellCount() > i)
                                 coll = row.getCell(i);
@@ -122,6 +124,24 @@ public class SQLiteDAO extends AbstractDAO {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
+     }
+
+     public void insertData() {
+        try
+        {
+            PreparedStatement statement = connection.prepareStatement(SQL_INSERT_TBL2);
+            statement.setString(1, "");
+            statement.setString(2, "");
+            statement.setString(3, "");
+            statement.setString(4, "");
+            statement.setString(5, "");
+
+            statement.execute();
+            statement.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
      }
 
 }

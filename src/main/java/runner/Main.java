@@ -15,8 +15,8 @@ import java.util.logging.SimpleFormatter;
 public class Main {
 
     //https://oauth.vk.com/authorize?client_id=7498451&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=friends,docs,wall,groups,offline&response_type=code&v=5.107
-    //https://oauth.vk.com/access_token?client_id=7498451&client_secret=h3N1Vad7fCrH1Ko6AHFu&redirect_uri=https://oauth.vk.com/blank.html&code=5528b774d047d02214
-
+    //https://oauth.vk.com/access_token?client_id=7498451&client_secret=h3N1Vad7fCrH1Ko6AHFu&redirect_uri=https://oauth.vk.com/blank.html&code=171cc6837fea27343a
+    //https://oauth.vk.com/access_token?client_id=7498451&client_secret=h3N1Vad7fCrH1Ko6AHFu&v=5.110&grant_type=client_credentials
 
     /*public static VkMessageGroup vkMessageGroup;
     static {
