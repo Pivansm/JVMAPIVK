@@ -387,21 +387,25 @@ public class MainLaunch {
         if(commentsAll != null) {
             TableRecordsAll tbl = new TableRecordsAll();
             for (var cm : commentsAll.getItems()) {
-                Records rs = new Records();
+                Records rsUser = new Records();
 
-                rs.addCell(cm.getId());
-                rs.addCell(group);
+                rsUser.addCell(cm.getId());
+                rsUser.addCell(group);
+                rsUser.addCell(commentId);
 
                 var comm = cm.getText();
                 System.out.println(":" + cm.getFromId() + " text:" + comm);
 
-                rs.addCell(comm);
-                rs.addCell(cm.getFromId());
+                rsUser.addCell(comm);
+                rsUser.addCell(cm.getFromId());
 
                 if (cm.getFromId() > 0) {
                     //Данные о клиенте
                     VkUserDul userFioDr = getUserDul(apiPostVK, "" + cm.getFromId());
                     System.out.println("Фам: " + userFioDr.getFullName() + " Имя: " + " Др:" + userFioDr.getBdate());
+
+                    rsUser.addCell(userFioDr.getFullName());
+                    rsUser.addCell(userFioDr.getBdate());
 
                     try {
                         Thread.sleep(1000);
@@ -410,15 +414,12 @@ public class MainLaunch {
                         Thread.currentThread().interrupt();
                     }
 
-                    rs.addCell(userFioDr.getFullName());
-                    rs.addCell(userFioDr.getBdate());
-
                 } else {
-                    System.out.println("Фам: Admin");
-                    rs.addCell("Модератор");
-                    rs.addCell(null);
+
+                    rsUser.addCell("Модератор");
+                    rsUser.addCell(null);
                 }
-                 tbl.addRecords(rs);
+                 tbl.addRecords(rsUser);
             }
 
             sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
