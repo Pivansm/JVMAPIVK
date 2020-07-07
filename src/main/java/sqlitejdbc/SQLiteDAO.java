@@ -91,7 +91,7 @@ public class SQLiteDAO extends AbstractDAO {
                                 continue;
                             }
 
-                            if(field.getFieldType() == "VARCHAR") {
+                            if(field.getFieldType().equals("VARCHAR")) {
                                 st.setString(i+1, coll.toString());
                             }
                             if(field.getFieldType().equals("INTEGER")) {

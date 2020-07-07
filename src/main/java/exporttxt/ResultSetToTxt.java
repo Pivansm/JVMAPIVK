@@ -6,15 +6,21 @@ import java.io.IOException;
 
 public class ResultSetToTxt {
     private String pathFile;
+    private FileWriter fileWriter;
 
     public ResultSetToTxt(String strPathFile) {
+
         this.pathFile = strPathFile;
+        try {
+            fileWriter = new FileWriter(new File(this.pathFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void toFileTxtExport(TableRecordsAll tbl) {
         try
         {
-            FileWriter fileWriter = new FileWriter( new File(this.pathFile));
             for(Records row: tbl.getListRec()) {
                 for(int i = 0, collCount = row.cellCount(); i < collCount; i++) {
                     if(collCount > 0) {
@@ -27,7 +33,7 @@ public class ResultSetToTxt {
                 }
                 fileWriter.write("\n");
             }
-            fileWriter.close();
+            //fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,5 +41,13 @@ public class ResultSetToTxt {
 
     public String getPathFile() {
         return pathFile;
+    }
+
+    public void fileClose() {
+        try {
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

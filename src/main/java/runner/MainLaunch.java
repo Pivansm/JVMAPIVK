@@ -123,6 +123,8 @@ public class MainLaunch {
 
     private void postToTableSqlite(SetQueryFields insertQuery, SetQueryFields insertComm) {
 
+        ResultSetToTxt toTxt = new ResultSetToTxt("postvk.csv");
+        ResultSetToTxt commToTxt = new ResultSetToTxt("commvk.csv");
         ApiPostVK apiPostVK = new ApiPostVK(setting);
         String[] strGroups = setting.getGroup_id().split("[, ]+");
         for(String group : strGroups) {
@@ -153,7 +155,7 @@ public class MainLaunch {
                     //Каптион
                     String strCaption = getCaption(gr.getAttachments());
                     //Комментарии
-                    exportCommentsToRep(apiPostVK, group, gr.getId(), insertComm);
+                    exportCommentsToRep(apiPostVK, group, gr.getId(), insertComm, commToTxt);
 
                     rs.addCell(strCaption);
                     rs.addCell(gr.getText());
@@ -185,7 +187,7 @@ public class MainLaunch {
                                 //Каптион
                                 String strCaption = getCaption(gr.getAttachments());
                                 //Комментарии
-                                exportCommentsToRep(apiPostVK, group, gr.getId(), insertComm);
+                                exportCommentsToRep(apiPostVK, group, gr.getId(), insertComm, commToTxt);
 
                                 rs.addCell(strCaption);
                                 rs.addCell(gr.getText());
@@ -202,8 +204,10 @@ public class MainLaunch {
 
                 //
                 System.out.println("Запись данных в БД!");
-                sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
-
+                //sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
+                toTxt.toFileTxtExport(tbl);
+                toTxt.fileClose();
+                commToTxt.fileClose();
          }
     }
 
@@ -374,7 +378,7 @@ public class MainLaunch {
         }
     }
 
-    public void exportCommentsToRep(ApiPostVK apiPostVK, String group, int commentId, SetQueryFields insertQuery) {
+    public void exportCommentsToRep(ApiPostVK apiPostVK, String group, int commentId, SetQueryFields insertQuery, ResultSetToTxt commToTxt) {
 
         GetCommentsResponse commentsAll = apiPostVK.getGroupComments(Integer.parseInt(group), commentId);
 
@@ -422,7 +426,8 @@ public class MainLaunch {
                  tbl.addRecords(rsUser);
             }
 
-            sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
+            //sqLiteDAO.insertBatch(tbl, insertQuery, 1000);
+            commToTxt.toFileTxtExport(tbl);
         }
 
     }
